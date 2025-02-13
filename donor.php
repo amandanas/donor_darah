@@ -26,12 +26,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Pencarian Data
 $search = "";
-if (isset($_GET['search'])) {
+$query = "SELECT * FROM pendonor"; // Default menampilkan semua data
+
+if (isset($_GET['search']) && !empty($_GET['search'])) {
     $search = $_GET['search'];
-    $query = "SELECT * FROM pendonor WHERE nama LIKE '%$search%' OR gol_darah='$search'";
-} else {
-    $query = "SELECT * FROM pendonor";
+    $query = "SELECT * FROM pendonor WHERE nama LIKE '%$search%' OR gol_darah LIKE '%$search%'";
 }
+
 $result = $conn->query($query);
 ?>
 
@@ -45,7 +46,7 @@ $result = $conn->query($query);
             font-family: Arial, sans-serif;
         }
         img {
-            width: 120px; /* Sesuaikan ukuran logo */
+            width: 180px; /* Sesuaikan ukuran logo */
             margin-bottom: 10px;
         }
     </style>
@@ -54,8 +55,10 @@ $result = $conn->query($query);
 <body>
     <div class="container mt-4">
         <!-- Logo PMI -->
-    <img src="images/logo_pmi.jpg" alt="Logo PMI">
+        <img src="images/logo_pmi.jpg" alt="Logo PMI">
         <h2>Pendaftaran Donor Darah</h2>
+        
+        <!-- Form Pendaftaran -->
         <form method="POST" action="">
             <div class="form-group">
                 <label>Nama:</label>
@@ -85,12 +88,16 @@ $result = $conn->query($query);
             <button type="submit" class="btn btn-primary">Daftar</button>
         </form>
 
+        <!-- Tabel Daftar Pendonor -->
         <h2 class="mt-4">Daftar Pendonor</h2>
         
+        <!-- Form Pencarian -->
         <form method="GET" action="">
             <input type="text" name="search" placeholder="Cari berdasarkan nama/golongan darah" value="<?php echo $search; ?>">
             <button type="submit" class="btn btn-info">Cari</button>
+            <a href="daftar_pendonor.php" class="btn btn-warning">Tampilkan Semua</a>
         </form>
+
         <table class="table table-bordered mt-3">
             <thead>
                 <tr>

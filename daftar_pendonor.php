@@ -4,23 +4,21 @@ $username = "root";
 $password = "";
 $dbname = "donor_darah";
 
-// Buat koneksi
+// Koneksi database
 $conn = new mysqli($servername, $username, $password, $dbname);
-
-// Cek koneksi
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }
 
-// Pencarian Data
-$search = "";
-$query = "SELECT * FROM pendonor"; // Default menampilkan semua data
-
-if (isset($_GET['search']) && !empty($_GET['search'])) {
-    $search = $_GET['search'];
-    $query = "SELECT * FROM pendonor WHERE nama LIKE '%$search%' OR gol_darah LIKE '%$search%'";
+// Hapus Data Pendonor
+if (isset($_GET['delete'])) {
+    $id = $_GET['delete'];
+    $conn->query("DELETE FROM pendonor WHERE id=$id");
+    header("Location: daftar_pendonor.php");
 }
 
+// Ambil Data Pendonor
+$query = "SELECT * FROM pendonor";
 $result = $conn->query($query);
 ?>
 
@@ -45,15 +43,6 @@ $result = $conn->query($query);
         <!-- Logo PMI -->
         <img src="images/logo_pmi.jpg" alt="Logo PMI">
         <h2>Daftar Pendonor</h2>
-
-        <!-- Form Pencarian -->
-        <form method="GET" action="">
-            <input type="text" name="search" placeholder="Cari berdasarkan nama/golongan darah" value="<?php echo $search; ?>">
-            <button type="submit" class="btn btn-info">Cari</button>
-            <a href="daftar_pendonor.php" class="btn btn-warning">Tampilkan Semua</a>
-        </form>
-
-        <!-- Tabel Daftar Pendonor -->
         <table class="table table-bordered mt-3">
             <thead>
                 <tr>
@@ -63,6 +52,7 @@ $result = $conn->query($query);
                     <th>Usia</th>
                     <th>Golongan Darah</th>
                     <th>No HP</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -74,6 +64,10 @@ $result = $conn->query($query);
                         <td><?php echo date_diff(date_create($row['ttl']), date_create('today'))->y; ?> tahun</td>
                         <td><?php echo $row['gol_darah']; ?></td>
                         <td><?php echo $row['no_hp']; ?></td>
+                        <td>
+                            <a href="edit_pendonor.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus pendonor ini?');">Delete</a>
+                        </td>
                     </tr>
                 <?php } ?>
             </tbody>
